@@ -4,10 +4,7 @@ import { StorageService } from '../services/storageService';
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
-/**
- * Todo Context Provider
- * Manages TODO state and provides CRUD operations
- */
+
 export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -64,9 +61,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-/**
- * Hook to use Todo Context
- */
+
 export const useTodos = (): TodoContextType => {
   const context = useContext(TodoContext);
   if (!context) {

@@ -9,10 +9,7 @@ import {
 } from 'react-native';
 import { useTodos } from '../contexts/TodoContext';
 
-/**
- * Add/Update Todo Component
- * Single input field for both adding and updating todos
- */
+
 export const AddTodo: React.FC = () => {
   const { addTodo } = useTodos();
   const [text, setText] = useState('');
@@ -79,5 +76,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-
 });

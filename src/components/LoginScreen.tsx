@@ -10,10 +10,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { AuthService } from '../services/authService';
 
-/**
- * Login Screen Component
- * Initial authentication screen with biometric status and security features
- */
+
 export const LoginScreen: React.FC = () => {
   const { 
     authenticate, 
@@ -29,14 +26,12 @@ export const LoginScreen: React.FC = () => {
       try {
         const enrolled = await AuthService.isBiometricEnrolled();
         setIsEnrolled(enrolled);
-      } catch (error) {
-        console.error('Error checking enrollment:', error);
+      } catch {
+        setIsEnrolled(false);
       }
     };
     checkEnrollment();
   }, []);
-
-
 
   const handleAuthenticate = async () => {
     if (!biometricSupported || !isEnrolled) {
@@ -53,21 +48,18 @@ export const LoginScreen: React.FC = () => {
     await authenticate();
   };
 
-  const getWelcomeMessage = (): string => {
-    if (!biometricSupported) return 'Device authentication required';
-    if (!isEnrolled) return `Please set up ${biometricDisplayName} first`;
-    if (hasAuthenticatedBefore) return `Welcome back! Use ${biometricDisplayName} to continue`;
-    return `Secure your TODOs with ${biometricDisplayName}`;
-  };
-
-  const getButtonText = (): string => {
-    if (!biometricSupported) return '🔢 Use Device Authentication';
-    if (!isEnrolled) return 'Setup Required';
-    if (hasAuthenticatedBefore) return `🔓 Unlock with ${biometricDisplayName}`;
-    return `🔐 Setup ${biometricDisplayName}`;
-  };
-
-  // Don't show loading screen for biometric check
+  const isReady = biometricSupported && isEnrolled;
+  const welcomeMessage = isReady
+    ? hasAuthenticatedBefore
+      ? `Welcome back! Use ${biometricDisplayName} to continue`
+      : `Secure your TODOs with ${biometricDisplayName}`
+    : 'Please set up biometric authentication first';
+  
+  const buttonText = isReady
+    ? hasAuthenticatedBefore
+      ? `🔓 Unlock with ${biometricDisplayName}`
+      : `🔐 Setup ${biometricDisplayName}`
+    : 'Setup Required';
 
   return (
     <View style={styles.container}>
@@ -77,10 +69,10 @@ export const LoginScreen: React.FC = () => {
           {hasAuthenticatedBefore ? 'Welcome Back!' : 'Secure TODO'}
         </Text>
         <Text style={styles.subtitle}>
-          {getWelcomeMessage()}
+          {welcomeMessage}
         </Text>
         
-        {(!biometricSupported || !isEnrolled) && (
+        {!isReady && (
           <View style={styles.warningContainer}>
             <Text style={styles.warningText}>
               {!biometricSupported 
@@ -103,12 +95,10 @@ export const LoginScreen: React.FC = () => {
             <ActivityIndicator color="#FFFFFF" size="small" />
           ) : (
             <Text style={styles.loginButtonText}>
-              {getButtonText()}
+              {buttonText}
             </Text>
           )}
         </TouchableOpacity>
-
-
 
         <Text style={styles.securityNote}>
           Your data is encrypted and secured

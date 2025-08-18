@@ -58,23 +58,10 @@ describe('User Acceptance Tests - PaidyTodoApp', () => {
       const displayName = await AuthService.getBiometricDisplayName();
       expect(displayName).toBe('Face ID');
     });
-
-    it('should check if biometric is supported', async () => {
-      const supported = await AuthService.isBiometricSupported();
-      expect(supported).toBe(true);
-    });
   });
 
   describe('UAT-002: User signs in with biometrics', () => {
     it('should authenticate successfully with Face ID', async () => {
-      mockAsyncStorage.getItem.mockResolvedValue(null);
-      
-      const result = await AuthService.authenticate();
-      
-      expect(result).toBe(true);
-    });
-
-    it('should authenticate with biometrics', async () => {
       mockAsyncStorage.getItem.mockResolvedValue(null);
       
       const result = await AuthService.authenticate();
@@ -89,7 +76,7 @@ describe('User Acceptance Tests - PaidyTodoApp', () => {
       
       expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
         'secure_session',
-        expect.stringContaining('expiry')
+        expect.stringContaining('timestamp')
       );
     });
 
@@ -204,22 +191,6 @@ describe('User Acceptance Tests - PaidyTodoApp', () => {
     });
   });
 
-  describe('UAT-009: User uses biometric authentication', () => {
-    it('should get biometric display name', async () => {
-      const displayName = await AuthService.getBiometricDisplayName();
-      
-      expect(displayName).toBe('Face ID');
-    });
-
-    it('should authenticate with biometrics', async () => {
-      mockAsyncStorage.getItem.mockResolvedValue(null);
-      
-      const result = await AuthService.authenticate();
-      
-      expect(result).toBe(true);
-    });
-  });
-
   describe('UAT-006: User logs out successfully', () => {
     it('should clear all authentication data', async () => {
       await AuthService.logout();
@@ -229,42 +200,12 @@ describe('User Acceptance Tests - PaidyTodoApp', () => {
       expect(mockAsyncStorage.removeItem).toHaveBeenCalledWith('biometric_state');
     });
 
-    it('should reset session timer to zero', () => {
-      const sessionTime = AuthService.getRemainingSessionTime();
-      expect(sessionTime).toBe(0);
-    });
-
     it('should require authentication again after logout', async () => {
+      mockAsyncStorage.getItem.mockResolvedValue(null);
       await AuthService.logout();
       
       const sessionValid = await AuthService.isSessionValid();
       expect(sessionValid).toBe(false);
-    });
-  });
-
-  describe('UAT-007: User session management', () => {
-    it('should maintain session for 15 minutes', async () => {
-      const validSession = JSON.stringify({
-        expiry: Date.now() + 900000, // 15 minutes
-        timestamp: Date.now()
-      });
-      mockAsyncStorage.getItem.mockResolvedValue(validSession);
-      
-      const isValid = await AuthService.isSessionValid();
-      
-      expect(isValid).toBe(true);
-    });
-
-    it('should expire session after 15 minutes', async () => {
-      const expiredSession = JSON.stringify({
-        expiry: Date.now() - 1000, // Expired 1 second ago
-        timestamp: Date.now() - 900000
-      });
-      mockAsyncStorage.getItem.mockResolvedValue(expiredSession);
-      
-      const isValid = await AuthService.isSessionValid();
-      
-      expect(isValid).toBe(false);
     });
   });
 

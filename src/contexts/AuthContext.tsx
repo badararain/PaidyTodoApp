@@ -5,10 +5,7 @@ import { AppState, AppStateStatus } from 'react-native';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-/**
- * Auth Context Provider
- * Manages authentication state, session handling, and app lifecycle
- */
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,13 +13,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [hasAuthenticatedBefore, setHasAuthenticatedBefore] = useState(false);
   const [biometricDisplayName, setBiometricDisplayName] = useState<string>('Device Authentication');
 
-  /**
-   * Check initial authentication state
-   */
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Quick session check
         const sessionValid = await AuthService.isSessionValid();
         
         if (sessionValid) {
@@ -32,7 +25,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
         
-        // Get basic auth info
         const [supported, hasAuthBefore, displayName] = await Promise.all([
           AuthService.isBiometricSupported(),
           AuthService.hasAuthenticatedBefore(),
@@ -56,27 +48,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeAuth();
   }, []);
 
-  /**
-   * Handle app state changes for security
-   * Require re-authentication when app comes from background
-   */
   useEffect(() => {
     const handleAppStateChange = async (nextAppState: AppStateStatus) => {
       if (nextAppState === 'active' && isAuthenticated) {
         try {
-          // Check if session is still valid when app becomes active
           const sessionValid = await AuthService.isSessionValid();
-          if (!sessionValid) {
-            setIsAuthenticated(false);
-          }
-        } catch (error) {
-          console.error('Error checking session validity:', error);
+          if (!sessionValid) setIsAuthenticated(false);
+        } catch {
           setIsAuthenticated(false);
         }
-      } else if (nextAppState === 'background' || nextAppState === 'inactive') {
-        // Optional: Immediately lock app when going to background
-        // Uncomment the line below for maximum security
-        // setIsAuthenticated(false);
       }
     };
 
@@ -84,9 +64,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription?.remove();
   }, [isAuthenticated]);
 
-  /**
-   * Authenticate user and update state
-   */
   const authenticate = async (): Promise<boolean> => {
     try {
       setIsLoading(true);
@@ -105,34 +82,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-
-
-  /**
-   * Logout user and clear all authentication data
-   */
   const logout = async (): Promise<void> => {
     try {
       await AuthService.logout();
-      setIsAuthenticated(false);
-      setHasAuthenticatedBefore(false);
     } catch (error) {
       console.error('Logout failed:', error);
-      // Force logout even if there's an error
+    } finally {
       setIsAuthenticated(false);
       setHasAuthenticatedBefore(false);
     }
   };
 
-  /**
-   * Check if biometric authentication is available
-   */
   const checkBiometricSupport = async (): Promise<boolean> => {
     try {
       const supported = await AuthService.isBiometricSupported();
       setBiometricSupported(supported);
       return supported;
-    } catch (error) {
-      console.error('Error checking biometric support:', error);
+    } catch {
       setBiometricSupported(false);
       return false;
     }
@@ -156,9 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-/**
- * Hook to use Auth Context
- */
+
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {

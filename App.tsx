@@ -13,9 +13,7 @@ import { TodoProvider } from './src/contexts/TodoContext';
 import { TodoList } from './src/components/TodoList';
 import { LoginScreen } from './src/components/LoginScreen';
 
-/**
- * Main App Content - Shows login or TODO list based on auth state
- */
+
 const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -28,7 +26,7 @@ const AppContent: React.FC = () => {
           <ActivityIndicator 
             size="small" 
             color="#2E5BFF" 
-            style={{ marginTop: 20 }}
+            style={styles.loadingSpinner}
           />
         </View>
       </SafeAreaView>
@@ -48,10 +46,7 @@ const AppContent: React.FC = () => {
   );
 };
 
-/**
- * Main App Component
- * Provides authentication context and handles auth flow
- */
+
 function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
@@ -81,6 +76,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#666666',
     fontWeight: '500',
+  },
+  loadingSpinner: {
+    marginTop: 20,
   },
 });
 

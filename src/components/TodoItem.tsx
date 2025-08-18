@@ -13,10 +13,7 @@ interface TodoItemProps {
   todo: Todo;
 }
 
-/**
- * Todo Item Component
- * Displays individual todo with select/delete functionality
- */
+
 export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   const { deleteTodo } = useTodos();
 
@@ -87,7 +84,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333333',
   },
-
   removeButton: {
     paddingHorizontal: 8,
   },
