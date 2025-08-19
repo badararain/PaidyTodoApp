@@ -1,97 +1,198 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Paidy TODO App
 
-# Getting Started
+A secure TODO list application built with React Native featuring biometric authentication for enhanced security.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 📱 Overview
 
-## Step 1: Start Metro
+This is a React Native TODO application that implements biometric authentication (Face ID/Touch ID/Fingerprint) to secure user data. The app provides a clean, intuitive interface for managing personal tasks while ensuring data privacy through device-level security.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## 🎯 Features
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **Biometric Authentication**: Secure login using Face ID, Touch ID, or Android Biometric authentication
+- **Secure Data Storage**: Encrypted local storage for TODO items
+- **Clean UI/UX**: Modern, intuitive interface with smooth animations
+- **Session Management**: Automatic session validation and timeout handling
+- **Cross-Platform**: Works on both iOS and Android devices
+- **Offline First**: All data stored locally on device for privacy and performance
 
-```sh
-# Using npm
-npm start
+## 🏗️ Architecture
 
-# OR using Yarn
-yarn start
+The application follows a clean architecture pattern with:
+
+- **Context-based State Management**: React Context for global state
+- **Service Layer**: Separated business logic for authentication and storage
+- **Component-based UI**: Reusable React components
+- **TypeScript**: Full type safety throughout the application
+
+### Project Structure
+
+```
+src/
+├── components/          # React components
+│   ├── AddTodo.tsx     # Add new TODO component
+│   ├── LoginScreen.tsx # Authentication screen
+│   ├── TodoItem.tsx    # Individual TODO item
+│   └── TodoList.tsx    # Main TODO list view
+├── contexts/           # React Context providers
+│   ├── AuthContext.tsx # Authentication state management
+│   └── TodoContext.tsx # TODO state management
+├── services/           # Business logic services
+│   ├── authService.ts  # Biometric authentication service
+│   └── storageService.ts # Local data storage service
+├── types/              # TypeScript type definitions
+│   └── index.ts        # Shared interfaces and types
+└── __tests__/          # Unit and integration tests
+    └── UserAcceptance.test.ts # User acceptance tests
 ```
 
-## Step 2: Build and run your app
+## 🔧 Technical Implementation
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### Authentication Service
 
-### Android
+- **Biometric Detection**: Automatically detects available biometric methods
+- **Security Lockout**: Implements failed attempt limits with temporary lockout
+- **Session Management**: Secure session tokens with validation
+- **Fallback Handling**: Graceful degradation when biometrics unavailable
 
-```sh
-# Using npm
-npm run android
+### Storage Service
 
-# OR using Yarn
-yarn android
+- **Encrypted Storage**: Uses AsyncStorage with secure key management
+- **Data Persistence**: Reliable TODO data storage and retrieval
+- **Error Handling**: Robust error handling for storage operations
+
+### State Management
+
+- **AuthContext**: Manages authentication state, biometric support, and user sessions
+- **TodoContext**: Handles TODO operations (add, delete, load) and loading states
+
+## 📦 Dependencies
+
+### Core Dependencies
+
+- **React Native 0.81.0**: Latest stable React Native framework
+- **React 19.1.0**: Latest React version
+- **react-native-biometrics**: Biometric authentication (equivalent to Expo LocalAuthentication)
+- **@react-native-async-storage/async-storage**: Secure local storage
+- **react-native-safe-area-context**: Safe area handling
+
+### Development Dependencies
+
+- **TypeScript**: Full type safety
+- **Jest**: Testing framework
+- **@testing-library/react-native**: Component testing utilities
+- **ESLint**: Code linting
+- **Prettier**: Code formatting
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js >= 18
+- React Native development environment set up
+- iOS Simulator or Android Emulator
+- Physical device with biometric authentication (recommended for testing)
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd PaidyTodoApp
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   yarn install
+   # or
+   npm install
+   ```
+
+3. **iOS Setup** (iOS only)
+   ```bash
+   cd ios
+   Pod install
+   cd ..
+   ```
+
+### Running the Application
+
+1. **Start Metro bundler**
+
+   ```bash
+   yarn start
+   # or
+   npm start
+   ```
+
+2. **Run on iOS**
+
+   ```bash
+   yarn ios
+   # or
+   npm run ios
+   ```
+
+3. **Run on Android**
+   ```bash
+   yarn android
+   # or
+   npm run android
+   ```
+
+### Testing
+
+Run the test suite:
+
+```bash
+yarn test
+# or
+npm test
 ```
 
-### iOS
+### Clean Build (if needed)
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```bash
+yarn cleanBuild
 ```
 
-Then, and every time you update your native dependencies, run:
+## ⚠️ Important Notes
 
-```sh
-bundle exec pod install
-```
+### Expo Module Integration Issue
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+Due to integration challenges with the latest Expo LocalAuthentication module within the project timeline, this implementation uses **react-native-biometrics** package instead. This package provides equivalent functionality to Expo's LocalAuthentication module and offers:
 
-```sh
-# Using npm
-npm run ios
+- Same biometric authentication capabilities
+- Cross-platform support (iOS/Android)
+- Similar API surface for authentication
+- Reliable biometric detection and enrollment checking
 
-# OR using Yarn
-yarn ios
-```
+The **react-native-biometrics** package is a mature, well-maintained alternative that provides the same security features and user experience as the Expo module.
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Main Branch
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+The main development branch for this project is **`main`**. All features and updates are committed to this branch.
 
-## Step 3: Modify your app
+## 🔄 Development Workflow
 
-Now that you have successfully run the app, let's make changes!
+### Code Quality
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+- **ESLint**: Enforces coding standards
+- **Prettier**: Maintains consistent code formatting
+- **TypeScript**: Provides compile-time type checking
+- **Jest**: Ensures code reliability through testing
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## 🐛 Troubleshooting
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+### Common Issues
 
-## Congratulations! :tada:
+1. **Biometric Authentication Not Working**
 
-You've successfully run and modified your React Native App. :partying_face:
+   - Ensure device has biometric authentication set up
+   - Check device settings for app permissions
+   - Verify biometric enrollment in device settings
 
-### Now what?
+## 🤝 Contributing
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+This is a take-home assignment project. The implementation demonstrates:
