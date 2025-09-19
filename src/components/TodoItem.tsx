@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
   Alert,
@@ -15,7 +16,31 @@ interface TodoItemProps {
 
 
 export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
-  const { deleteTodo } = useTodos();
+  const { updateTodo, deleteTodo } = useTodos();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(todo.text);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSave = async () => {
+    if (!editText.trim()) {
+      Alert.alert('Error', 'Todo text cannot be empty');
+      return;
+    }
+    try {
+      await updateTodo(todo.id, editText);
+      setIsEditing(false);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update todo');
+    }
+  };
+
+  const handleCancel = () => {
+    setEditText(todo.text);
+    setIsEditing(false);
+  };
 
   const handleDelete = () => {
     Alert.alert(
@@ -43,11 +68,37 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
       <View style={styles.content}>
         <View style={styles.indicator} />
         <View style={styles.textContainer}>
-          <Text style={styles.text}>{todo.text}</Text>
+          {isEditing ? (
+            <TextInput
+              style={styles.editInput}
+              value={editText}
+              onChangeText={setEditText}
+              autoFocus
+              multiline
+            />
+          ) : (
+            <Text style={styles.text}>{todo.text}</Text>
+          )}
         </View>
-        <TouchableOpacity style={styles.removeButton} onPress={handleDelete}>
-          <Text style={styles.removeText}>REMOVE</Text>
-        </TouchableOpacity>
+        {isEditing ? (
+          <View style={styles.editButtons}>
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+              <Text style={styles.saveText}>SAVE</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+              <Text style={styles.cancelText}>CANCEL</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.actionButtons}>
+            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+              <Text style={styles.editText}>EDIT</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.removeButton} onPress={handleDelete}>
+              <Text style={styles.removeText}>REMOVE</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -83,6 +134,47 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: '#333333',
+  },
+  editInput: {
+    fontSize: 16,
+    color: '#333333',
+    borderWidth: 1,
+    borderColor: '#2E5BFF',
+    borderRadius: 4,
+    padding: 8,
+    backgroundColor: '#F8F9FA',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  editButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  editButton: {
+    paddingHorizontal: 8,
+  },
+  editText: {
+    fontSize: 14,
+    color: '#2E5BFF',
+    fontWeight: '500',
+  },
+  saveButton: {
+    paddingHorizontal: 8,
+  },
+  saveText: {
+    fontSize: 14,
+    color: '#28A745',
+    fontWeight: '500',
+  },
+  cancelButton: {
+    paddingHorizontal: 8,
+  },
+  cancelText: {
+    fontSize: 14,
+    color: '#DC3545',
+    fontWeight: '500',
   },
   removeButton: {
     paddingHorizontal: 8,

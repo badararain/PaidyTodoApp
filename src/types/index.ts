@@ -19,6 +19,7 @@ export interface AuthContextType {
 export interface TodoContextType {
   todos: Todo[];
   addTodo: (text: string) => Promise<void>;
+  updateTodo: (id: string, text: string) => Promise<void>;
   deleteTodo: (id: string) => Promise<void>;
   loading: boolean;
 }

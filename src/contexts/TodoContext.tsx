@@ -44,6 +44,17 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await saveTodos(newTodos);
   };
 
+  const updateTodo = async (id: string, text: string): Promise<void> => {
+    if (!text.trim()) return;
+    
+    const newTodos = todos.map(todo => 
+      todo.id === id 
+        ? { ...todo, text: text.trim(), updatedAt: new Date() }
+        : todo
+    );
+    await saveTodos(newTodos);
+  };
+
   const deleteTodo = async (id: string): Promise<void> => {
     const newTodos = todos.filter(todo => todo.id !== id);
     await saveTodos(newTodos);
@@ -53,6 +64,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <TodoContext.Provider value={{
       todos,
       addTodo,
+      updateTodo,
       deleteTodo,
       loading,
     }}>
